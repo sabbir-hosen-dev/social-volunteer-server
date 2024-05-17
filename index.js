@@ -3,7 +3,7 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 require("dotenv").config();
 
-// const PORT = 5001;
+const PORT = process.env.PORT || 5001;
 const app = express();
 app.use(cors());
 app.use(express.json())
@@ -19,6 +19,8 @@ const client = new MongoClient(uri, {
     strict: true,
     deprecationErrors: true,
   },
+  useNewUrlParser: true, 
+  useUnifiedTopology: true,
 });
 
 async function run() {
@@ -43,13 +45,14 @@ async function run() {
       res.send("Hello, I am server");
     });
 
-    // app.listen(PORT, () => {
-    //   console.log(`Server running at http://localhost:${PORT}`);
-    // });
+    app.listen(PORT, () => {
+      console.log(`Server running at http://localhost:${PORT}`);
+    });
   } catch (err) {
     console.error("Error:", err);
   }
 }
 
 run().catch(console.dir);
+
 module.exports = app;
