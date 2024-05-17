@@ -1,26 +1,21 @@
 const express = require("express");
 const cors = require("cors");
-const bodyParser = require("body-parser");
 require("dotenv").config();
 
-const PORT = process.env.PORT || 5001;
 const app = express();
 app.use(cors());
-app.use(express.json())
+app.use(express.json());
 
 const { MongoClient, ServerApiVersion } = require("mongodb");
 
 const uri = `mongodb+srv://socail-volunteer:${process.env.USER_PASS}@social-voluenteer.g250ggw.mongodb.net/?retryWrites=true&w=majority&appName=social-voluenteer`;
 
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
     strict: true,
     deprecationErrors: true,
   },
-  useNewUrlParser: true, 
-  useUnifiedTopology: true,
 });
 
 async function run() {
@@ -28,25 +23,23 @@ async function run() {
     await client.connect();
     console.log("Connected to MongoDB");
 
-    const collection = client.db(process.env.DB_NAME).collection(process.env.DB_COLLESTER);
+    const collection = client
+      .db(process.env.DB_NAME)
+      .collection(process.env.DB_COLLESTER);
 
-    app.get("/allData",async (req,res) =>{
+    app.get("/allData", async (req, res) => {
       try {
         const data = await collection.find({}).toArray();
-        res.send(data)
-        console.log(data)
+        res.send(data);
+        console.log(data);
       } catch (error) {
-        console.log(error)
+        console.log(error);
+        res.status(500).send("Error fetching data");
       }
-    })
-
+    });
 
     app.get("/", (req, res) => {
       res.send("Hello, I am server");
-    });
-
-    app.listen(PORT, () => {
-      console.log(`Server running at http://localhost:${PORT}`);
     });
   } catch (err) {
     console.error("Error:", err);
