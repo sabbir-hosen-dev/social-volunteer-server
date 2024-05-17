@@ -3,7 +3,7 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 require("dotenv").config();
 
-const PORT = 5001;
+// const PORT = 5001;
 const app = express();
 app.use(cors());
 app.use(express.json())
@@ -43,9 +43,9 @@ async function run() {
       res.send("Hello, I am server");
     });
 
-    app.listen(PORT, () => {
-      console.log(`Server running at http://localhost:${PORT}`);
-    });
+    // app.listen(PORT, () => {
+    //   console.log(`Server running at http://localhost:${PORT}`);
+    // });
   } catch (err) {
     console.error("Error:", err);
   }
