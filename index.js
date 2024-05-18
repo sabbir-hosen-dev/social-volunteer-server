@@ -27,7 +27,6 @@ const client = new MongoClient(uri, {
 });
 
 async function run() {
-
   try {
     await client.connect();
     console.log("Connected to MongoDB");
@@ -109,6 +108,7 @@ async function run() {
         res.status(500).send("Error fetching data");
       }
     });
+
     app.get("/", (req, res) => {
       res.send("Hello, I am server");
     });
@@ -116,7 +116,6 @@ async function run() {
     app.listen(port, () => {
       console.log(`Server running at http://localhost:${port}`);
     });
-    
   } catch (err) {
     console.error("Error:", err);
   }
