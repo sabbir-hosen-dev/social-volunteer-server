@@ -1,7 +1,6 @@
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-
 require("dotenv").config();
 
 const port = process.env.PORT || 4000;
@@ -22,6 +21,9 @@ const client = new MongoClient(uri, {
     strict: true,
     deprecationErrors: true,
   },
+  tls: true,
+  tlsAllowInvalidCertificates: false,
+  tlsAllowInvalidHostnames: false,
 });
 
 async function run() {
@@ -37,49 +39,53 @@ async function run() {
       .db(process.env.DB_NAME)
       .collection("select-volunteer");
 
-    app.post("/postEvent",async (req,res) => {
-      try{
+    app.post("/postEvent", async (req, res) => {
+      try {
         const data = await collection.insertOne(req.body);
-        res.send(data)
-      }catch (err) {console.log(err)}
-    })
-
-    app.delete("/deleteAttendEvent/:id", async(req,res) => {
-      try {
-          const data = await userCollection.deleteOne({_id: new ObjectId(req.params.id)});
-          res.send(data)
-      } catch (error) {
-        
+        res.send(data);
+      } catch (err) {
+        console.log(err);
+        res.status(500).send("Error adding event");
       }
-    })
+    });
 
-
-    app.get("/attendEvent", async (req,res) => {
+    app.delete("/deleteAttendEvent/:id", async (req, res) => {
       try {
-        const data = await userCollection.find({}).toArray()
-        res.send(data)
+        const data = await userCollection.deleteOne({ _id: new ObjectId(req.params.id) });
+        res.send(data);
       } catch (error) {
-        console.log(error)
+        console.log(error);
+        res.status(500).send("Error deleting event");
       }
-    })
+    });
 
-    app.delete("/deleteItem/:id" , async (req,res) => {
+    app.get("/attendEvent", async (req, res) => {
       try {
-        const data = await userCollection.deleteOne({_id: new ObjectId(req.params.id)})
-        res.send(data)
+        const data = await userCollection.find({}).toArray();
+        res.send(data);
       } catch (error) {
-        console.log(error)
+        console.log(error);
+        res.status(500).send("Error fetching events");
       }
-    })
+    });
 
-
+    app.delete("/deleteItem/:id", async (req, res) => {
+      try {
+        const data = await userCollection.deleteOne({ _id: new ObjectId(req.params.id) });
+        res.send(data);
+      } catch (error) {
+        console.log(error);
+        res.status(500).send("Error deleting item");
+      }
+    });
 
     app.get("/userData", async (req, res) => {
       try {
         const data = await userCollection.find({ email: req.query.email }).toArray();
-        res.send(data)
+        res.send(data);
       } catch (error) {
-        console.log(error)
+        console.log(error);
+        res.status(500).send("Error fetching user data");
       }
     });
 
@@ -89,7 +95,7 @@ async function run() {
         res.send(data);
       } catch (err) {
         console.log(err);
-        res.status(200, "not send data on database");
+        res.status(500).send("Error adding data");
       }
     });
 
@@ -106,13 +112,13 @@ async function run() {
     app.get("/", (req, res) => {
       res.send("Hello, I am server");
     });
+
+    app.listen(port, () => {
+      console.log(`Server running at http://localhost:${port}`);
+    });
   } catch (err) {
     console.error("Error:", err);
   }
-
-  app.listen(PORT, () => {
-    console.log(`server runing at http://localhost:${PORT}`);
-  });
 }
 
 run().catch(console.dir);
